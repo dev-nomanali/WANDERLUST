@@ -7,7 +7,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-const {listingSchema} = require("./schema.js");
+const { listingSchema } = require("./schema.js");
 
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
@@ -36,74 +36,78 @@ app.get("/", (req, res) => {
     res.send("Hi I am root");
 });
 
+const validateListing = (req, res, next) => {
+    console.log(req.body);
+
+    if (!req.body) {
+        throw new ExpressError(400, "No data received — please send listing details");
+    }
+    const { error } = listingSchema.validate(req.body);
+    if (error) {
+      let msg = error.details.map((el) => el.message).join(", ");
+      throw new ExpressError(400, msg);
+    }else{
+    next();
+    }
+}
+
 //index route
 app.get("/listings",
-    wrapAsync(async(req, res) => {
-    const allListings = await Listing.find({});
-    res.render("listings/index.ejs", { allListings });
-})
+    wrapAsync(async (req, res) => {
+        const allListings = await Listing.find({});
+        res.render("listings/index.ejs", { allListings });
+    })
 );
 //new route
 app.get("/listings/new",
-    wrapAsync(async(req, res) => {
-    res.render("listings/new.ejs");
-})
+    wrapAsync(async (req, res) => {
+        res.render("listings/new.ejs");
+    })
 );
 
 //show route
 app.get("/listings/:id",
-    wrapAsync(async(req, res) => {
-    let { id } = req.params;
-    const listing = await Listing.findById(id);
-    res.render("listings/show.ejs", { listing });
-})
+    wrapAsync(async (req, res) => {
+        let { id } = req.params;
+        const listing = await Listing.findById(id);
+        res.render("listings/show.ejs", { listing });
+    })
 );
 //Create route
 app.post("/listings",
-  wrapAsync(async (req, res, next) => {
-    if (!req.body) {
-      throw new ExpressError(400, "No data received — please send listing details");
-    }
-
-    const { error } = listingSchema.validate(req.body);
-    if (error) {
-      const msg = error.details.map(el => el.message).join(", ");
-      throw new ExpressError(400, msg);
-    }
-
-    const newListing = new Listing(req.body.listing);
-    await newListing.save();
-    res.redirect("/listings");
-  })
+    validateListing,
+    wrapAsync(async (req, res, next) => {
+        const newListing = new Listing(req.body.listing);
+        await newListing.save();
+        res.redirect("/listings");
+    })
 );
 
 //Edit route
 app.get("/listings/:id/edit",
-    wrapAsync(async(req, res) => {
-    let { id } = req.params;
-    const listing = await Listing.findById(id);
-    res.render("listings/edit.ejs", { listing });
-})
+    wrapAsync(async (req, res) => {
+        let { id } = req.params;
+        const listing = await Listing.findById(id);
+        res.render("listings/edit.ejs", { listing });
+    })
 );
 //Update route
 app.put("/listings/:id",
-    wrapAsync(async(req, res) => {
-          if(!req.body.listing) {
-            throw new ExpressError(400, "send valid data for listing");
-        }
-    let { id } = req.params;
-    await Listing.findByIdAndUpdate(id, { ...req.body.listing });
-    res.redirect(`/listings/${id}`);
-})
+    validateListing,
+    wrapAsync(async (req, res) => {
+        let { id } = req.params;
+        await Listing.findByIdAndUpdate(id, { ...req.body.listing });
+        res.redirect(`/listings/${id}`);
+    })
 );
 //Delete route
 app.delete("/listings/:id",
-    wrapAsync(async(req, res) => {
-    let { id } = req.params;
-    let deletedListing = await Listing.findByIdAndDelete(id);
-    console.log(deletedListing);
-    res.redirect("/listings");
-})
+    wrapAsync(async (req, res) => {
+        let { id } = req.params;
+        let deletedListing = await Listing.findByIdAndDelete(id);
+        console.log(deletedListing);
+        res.redirect("/listings");
+    })
 );
 
 // app.get("/testlisting", async (req, res) =>{
@@ -127,7 +131,7 @@ app.use((req, res, next) => {
 // Error-handling middleware
 app.use((err, req, res, next) => {
     let { statusCode = 500, message = "Something went wrong" } = err;
-    res.status(statusCode).render("error.ejs", {message});
+    res.status(statusCode).render("error.ejs", { message });
     // res.status(statusCode).send(message);
 });
 

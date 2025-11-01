@@ -151,7 +151,7 @@ app.delete("/listings/:id/reviews/:reviewId", wrapAsync(async (req, res) =>{
     await Review.findByIdAndDelete(reviewId);
 
     res.redirect(`/listings/${id}`);
-}))
+}));
 
 // app.get("/testlisting", async (req, res) =>{
 //     let sampleListing = new Listing({

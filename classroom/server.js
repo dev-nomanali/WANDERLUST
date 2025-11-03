@@ -1,14 +1,16 @@
 const express = require("express");
 const app = express();
+const users = require("./routes/user.js");
+const posts = require("./routes/post.js");
 
 app.get("/", (req, res) => {
     res.send("Hi I am root!");
 });
 
-//Index _ users
-app.get("/users", (req, res) => {
-    res.send("GET for show users");
-});
+
+app.use("/users", users);
+app.use("/posts", posts)
+
 
 
 

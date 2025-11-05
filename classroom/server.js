@@ -2,27 +2,44 @@ const express = require("express");
 const app = express();
 const users = require("./routes/user.js");
 const posts = require("./routes/post.js");
-const cookieParser = require("cookie-parser");
+const session = require("express-session");
 
-app.use(cookieParser());
+const sessionOptions = {
+    secret: "mysupersecretstring",
+    resave: false,
+    saveUninitialized: true,
+};
 
-app.get("/getcookies", (req, res) => {
-    res.cookie("greet", "hello");
-    res.send("send you some cookies!")
-});
+app.use(session(sessionOptions));
 
-app.get("/", (req, res) => {
-    console.log(req.cookies);
+app.get("/register", (req, res) => {
+    let {name = "anonymous"} = req.query;
+    req.session.name = name;
+    console.log(req.session.name );
     
-    res.send("Hi I am root!");
+    console.log(req.session);
+    
+    res.redirect("/hello");
 });
 
+app.get("/hello", (req, res) => {
+    res.send(`hello, ${req.session.name}`);
+})
 
-app.use("/users", users);
-app.use("/posts", posts)
+// app.get("/reqcount", (req, res) => {
+//     if (req.session.count) {
+//         req.session.count++;
+//     } else {
+//         req.session.count = 1;
 
+//     }
+//     res.send(`You sent a request ${req.session.count} trime`);
+// });
 
-
+// app.get("/test", (req, res) => {
+//     console.log("test successful!");
+//     res.send("test successful!")
+// });
 
 app.listen(3000, () => {
     console.log("server is listening to 3000");

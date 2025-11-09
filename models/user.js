@@ -14,3 +14,16 @@ const reviewSchema = new Schema({
         default: Date.now()
     }
 });
+
+const revieSchema = new Schema({
+    comment: String,
+    rating: {
+        type:Number,
+        main: 1,
+        max: 5,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now()
+    }
+});

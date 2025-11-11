@@ -1,42 +1,14 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const mongoose = require("mongoose");
+const passportLocalMongoose = require("passport-local-mongoose");
 
-
-const reviewSchema = new Schema({
-    comment: String,
-    rating: {
-        type:Number,
-        main: 1,
-        max: 5,
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now()
+const userSchema = new Schema({
+    email: {
+        type: String,
+        required: true
     }
 });
 
-const revieSchema = new Schema({
-    comment: String,
-    rating: {
-        type:Number,
-        main: 1,
-        max: 5,
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now()
-    }
-});
-const reviSchema = new Schema({
-    comment: String,
-    rating: {
-        type:Number,
-        main: 1,
-        max: 5,
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now()
-    }
-});
+userSchema.plugin(passportLocalMongoose);
+
+module.exports = mongoose.model("user", userSchema);

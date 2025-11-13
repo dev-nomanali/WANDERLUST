@@ -86,10 +86,9 @@ app.use((req, res, next) => {
 //     res.send(registeredUser);
 // });
      
+app.use("/", userRouter);
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
-app.use("/", userRouter);
-
 
 // Catch-all route (404)
 app.use((req, res, next) => {

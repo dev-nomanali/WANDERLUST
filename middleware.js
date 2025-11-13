@@ -32,8 +32,6 @@ module.exports.isOwner = async(req, res, next) => {
 };
 
 module.exports.validateListing = (req, res, next) => {
-    console.log(req.body);
-
     if (!req.body) {
         throw new ExpressError(400, "No data received — please send listing details");
     }

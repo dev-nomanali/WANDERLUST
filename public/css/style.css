@@ -113,3 +113,8 @@ body{
     padding-left: 0;
     padding-right: 0;
 }
+
+.editImg img{
+    height: 200px;
+    width: 250px;
+}
